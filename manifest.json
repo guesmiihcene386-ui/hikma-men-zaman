@@ -1,0 +1,11 @@
+{
+  "name": "حكمة من زمان",
+  "short_name": "حكمة زمان",
+  "description": "أمثال وحكم من التراث",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5efe4",
+  "theme_color": "#687451"
