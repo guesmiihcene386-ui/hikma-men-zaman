@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#687451">
+<title>حكمة من زمان</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f5efe4;color:#57432f;font-family:Tahoma,Arial,sans-serif;line-height:1.8}
+header{background:#687451;color:white;text-align:center;padding:28px 15px;border-radius:0 0 25px 25px}
+h1{margin:0;font-size:27px}
+header p{margin:5px}
+main{max-width:650px;margin:20px auto;padding:12px}
+input{width:100%;padding:13px;border:1px solid #d9cbb7;border-radius:12px;font-size:16px;margin-bottom:12px}
+button{border:0;border-radius:12px;padding:11px 15px;background:#687451;color:white;font-size:15px;margin:4px;cursor:pointer}
+button.active{background:#b69a68}
+.card{background:#fffaf1;border:1px solid #e7dccb;border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 5px 18px #57432f10}
+.quote{font-size:20px;font-weight:bold}
+.meaning{color:#8b7b66}
+.actions{display:flex;flex-wrap:wrap;gap:5px}
+footer{text-align:center;color:#8b7b66;padding:20px}
+</style>
+</head>
+<body>
+<header>
+<h1>حكمة من زمان</h1>
+<p>من تراث الأجداد… كلمات تبقى عبر الأزمان</p>
+</header>
+<main>
+<div class="card">
+<h3>🌿 حكمة اليوم</h3>
+<div id="daily" class="quote"></div>
+<button onclick="randomQuote()">حكمة أخرى</button>
+</div>
+<input id="search" placeholder="ابحثي عن حكمة أو كلمة..." oninput="render()">
+<div class="actions">
+<button class="active" onclick="setFilter('all',this)">الكل</button>
+<button onclick="setFilter('proverb',this)">أمثال</button>
+<button onclick="setFilter('wisdom',this)">حكم</button>
+<button onclick="setFilter('fav',this)">المفضلة ♡</button>
+</div>
+<div id="list"></div>
+</main>
+<footer>حكمة من زمان © 2026</footer>
+<script>
+const items=[
+{t:"الصبر مفتاح الفرج",c:"wisdom",m:"التأني والثبات يساعدان على تجاوز الصعوبات."},
+{t:"من جدّ وجد، ومن زرع حصد",c:"wisdom",m:"الاجتهاد والعمل طريق الوصول إلى النتائج."},
+{t:"يد واحدة لا تصفق",c:"proverb",m:"التعاون يجعل إنجاز الأعمال أسهل."},
+{t:"الجار قبل الدار",c:"proverb",m:"حسن الجوار من الأمور المهمة في اختيار السكن."},
+{t:"كل تأخيرة فيها خيرة",c:"proverb",m:"قد تحمل بعض التأخيرات نتائج أفضل مما نتوقع."},
+{t:"العلم نور والجهل ظلام",c:"wisdom",m:"المعرفة تساعد الإنسان على فهم العالم."},
+{t:"اللي فات مات",c:"proverb",m:"لا يفيد الانشغال بالماضي على حساب الحاضر."},
+{t:"الكلمة الطيبة صدقة",c:"wisdom",m:"للكلام اللطيف أثر حسن في النفوس."}
+];
+let filter="all";
+let favorites=JSON.parse(localStorage.getItem("hikmaFav")||"[]");
+function randomQuote(){
+let x=items[Math.floor(Math.random()*items.length)];
+document.getElementById("daily").textContent=x.t;
+}
+function setFilter(f,b){
+filter=f;
+document.querySelectorAll(".actions button").forEach(x=>x.classList.remove("active"));
+b.classList.add("active");
+render();
+}
+function toggleFav(t){
+favorites=favorites.includes(t)?favorites.filter(x=>x!==t):[...favorites,t];
+localStorage.setItem("hikmaFav",JSON.stringify(favorites));
+render();
+}
+function render(){
+let q=document.getElementById("search").value.trim();
+let shown=items.filter(x=>
+(filter==="all"||x.c===filter||(filter==="fav"&&favorites.includes(x.t)))&&
+(x.t.includes(q)||x.m.includes(q))
+);
+document.getElementById("list").innerHTML=shown.map(x=>`
+<div class="card">
+<div class="quote">${x.t}</div>
+<p class="meaning">${x.m}</p>
+<button onclick="toggleFav(${JSON.stringify(x.t)})">
+${favorites.includes(x.t)?"♥ إزالة من المفضلة":"♡ أضيفي للمفضلة"}
+</button>
+<button onclick="shareQuote(${JSON.stringify(x.t)})">مشاركة</button>
+</div>`).join("")||"<p>لا توجد نتائج.</p>";
+}
+function shareQuote(t){
+if(navigator.share){navigator.share({title:"حكمة من زمان",text:t});}
+else if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>alert("تم نسخ الحكمة"));}
+else{alert(t);}
+}
+randomQuote();
+render();
+</script>
+</body>
+  </html>
